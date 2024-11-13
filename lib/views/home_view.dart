@@ -12,6 +12,9 @@ class _HomeViewState extends State<HomeView> {
   List<Map<String, dynamic>> notes = [];
   DBHelper? dbRef;
 
+  final titleTEC = TextEditingController();
+  final descTEC = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +30,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(title: const Text('Notes')),
       body: notes.isEmpty
           ? const Center(
@@ -44,11 +48,57 @@ class _HomeViewState extends State<HomeView> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          dbRef!.addNote(title: 'Demo Title', desc: 'Demo Description');
-          getNotes();
+          _addNoteBottomSheet(context);
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _addNoteBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: titleTEC,
+                decoration: const InputDecoration(
+                  hintText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: descTEC,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  hintText: 'Description',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  dbRef!.addNote(
+                    title: titleTEC.text.trim(),
+                    desc: descTEC.text.trim(),
+                  );
+                  getNotes();
+                  Navigator.pop(context);
+                  titleTEC.clear();
+                  descTEC.clear();
+                },
+                child: const Text('Add Note'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
