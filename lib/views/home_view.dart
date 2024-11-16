@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_intro/data/local/db_helper.dart';
+import 'package:sqflite_intro/models/note_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -9,7 +10,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<Map<String, dynamic>> notes = [];
+  List<NoteModel> notes = [];
   DBHelper? dbRef;
 
   final titleTEC = TextEditingController();
@@ -39,10 +40,12 @@ class _HomeViewState extends State<HomeView> {
           : ListView.builder(
               itemCount: notes.length,
               itemBuilder: (_, i) {
+                NoteModel note = notes[i];
                 return ListTile(
-                  leading: Text(notes[i][DBHelper.COL_NOTE_SERIAL].toString()),
-                  title: Text(notes[i][DBHelper.COL_NOTE_TITLE]),
-                  subtitle: Text(notes[i][DBHelper.COL_NOTE_DESC]),
+                  leading: Text(note.id.toString()),
+                  title: Text(note.title),
+                  subtitle: Text(note.description),
+                  // subtitle: Text(notes[i][DBHelper.COL_NOTE_DESC]),
                 );
               },
             ),
@@ -85,8 +88,10 @@ class _HomeViewState extends State<HomeView> {
               ElevatedButton(
                 onPressed: () {
                   dbRef!.addNote(
-                    title: titleTEC.text.trim(),
-                    desc: descTEC.text.trim(),
+                    note: NoteModel(
+                      title: titleTEC.text.trim(),
+                      description: descTEC.text.trim(),
+                    ),
                   );
                   getNotes();
                   Navigator.pop(context);

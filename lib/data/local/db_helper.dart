@@ -5,6 +5,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../models/note_model.dart';
+
 class DBHelper {
   //singleton
   DBHelper._();
@@ -47,14 +49,14 @@ class DBHelper {
 
   ///========== Queries ==========
   //insertion
-  Future<bool> addNote({required String title, required String desc}) async {
+  Future<bool> addNote({required NoteModel note}) async {
     var db = await getDB();
 
     int rowsAffected = await db.insert(
       TABLE_NOTE,
       {
-        COL_NOTE_TITLE: title,
-        COL_NOTE_DESC: desc,
+        COL_NOTE_TITLE: note.title,
+        COL_NOTE_DESC: note.description,
       },
     );
 
@@ -62,10 +64,16 @@ class DBHelper {
   }
 
   //reading
-  Future<List<Map<String, Object?>>> getAllNotes() async {
+  Future<List<NoteModel>> getAllNotes() async {
     var db = await getDB();
 
-    List<Map<String, Object?>> data = await db.query(TABLE_NOTE);
-    return data;
+    final rawData = await db.query(TABLE_NOTE);
+    List<NoteModel> notes =
+        rawData.map((data) => NoteModel.fromJson(data)).toList();
+
+    return notes;
   }
+
+  //update
+  void update() {}
 }
