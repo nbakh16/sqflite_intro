@@ -17,6 +17,7 @@ class DBHelper {
   static const String COL_NOTE_SERIAL = 's_no';
   static const String COL_NOTE_TITLE = 'title';
   static const String COL_NOTE_DESC = 'description';
+  static const String COL_NOTE_ISDONE = 'is_done';
 
   Database? myDB;
 
@@ -75,5 +76,33 @@ class DBHelper {
   }
 
   //update
-  void update() {}
+  Future<bool> update(NoteModel note) async {
+    var db = await getDB();
+    int rowsAffected = await db.update(
+      TABLE_NOTE,
+      note.toMap(),
+      where: '$COL_NOTE_SERIAL = ${note.id}',
+    );
+    return rowsAffected > 0;
+  }
+
+  //delete
+  Future<bool> delete(int id) async {
+    var db = await getDB();
+    int rowsAffected = await db.delete(
+      TABLE_NOTE,
+      where: '$COL_NOTE_SERIAL = $id',
+    );
+
+    return rowsAffected > 0;
+  }
+
+  //clear db
+  Future<bool> clearDatabase() async {
+    var db = await getDB();
+
+    int rowsAffected = await db.delete(TABLE_NOTE);
+
+    return rowsAffected > 0;
+  }
 }

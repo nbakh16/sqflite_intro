@@ -32,7 +32,21 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: const Text('Notes')),
+      appBar: AppBar(
+        title: const Text('Notes'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              dbRef!.clearDatabase();
+              getNotes();
+            },
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+          )
+        ],
+      ),
       body: notes.isEmpty
           ? const Center(
               child: Text('No notes!'),
@@ -45,7 +59,32 @@ class _HomeViewState extends State<HomeView> {
                   leading: Text(note.id.toString()),
                   title: Text(note.title),
                   subtitle: Text(note.description),
-                  // subtitle: Text(notes[i][DBHelper.COL_NOTE_DESC]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          await dbRef!.delete(note.id);
+                          getNotes();
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          titleTEC.text = note.title;
+                          descTEC.text = note.description;
+                          _updateNoteBottomSheet(context);
+                        },
+                        icon: const Icon(
+                          Icons.edit,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
@@ -99,6 +138,56 @@ class _HomeViewState extends State<HomeView> {
                   descTEC.clear();
                 },
                 child: const Text('Add Note'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _updateNoteBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: titleTEC,
+                decoration: const InputDecoration(
+                  hintText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: descTEC,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  hintText: 'Description',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  dbRef!.update(
+                    NoteModel(
+                      title: titleTEC.text.trim(),
+                      description: descTEC.text.trim(),
+                      isDone: false,
+                    ),
+                  );
+                  getNotes();
+                  Navigator.pop(context);
+                  titleTEC.clear();
+                  descTEC.clear();
+                },
+                child: const Text('Update Note'),
               ),
             ],
           ),

@@ -18,4 +18,13 @@ class NoteModel {
       // isDone: json['isDone'] == 1,
     );
   }
+
+  Map<String, Object?> toMap() {
+    return {
+      's_no': id, // Ensure this matches your table's primary key column name
+      'title': title,
+      'description': description,
+      'isDone': isDone ? 1 : 0, // Assuming 0/1 storage for boolean in database
+    };
+  }
 }
