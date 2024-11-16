@@ -2,12 +2,12 @@ class NoteModel {
   int id;
   String title;
   String description;
-  bool isDone;
+  int isDone;
   NoteModel({
     this.id = 0,
     required this.title,
     required this.description,
-    this.isDone = false,
+    this.isDone = 0,
   });
 
   factory NoteModel.fromJson(Map<String, Object?> json) {
@@ -15,16 +15,16 @@ class NoteModel {
       id: json['s_no'] as int,
       title: json['title'] as String,
       description: json['description'] as String,
-      // isDone: json['isDone'] == 1,
+      isDone: json['is_done'] as int,
     );
   }
 
   Map<String, Object?> toMap() {
     return {
-      's_no': id, // Ensure this matches your table's primary key column name
+      's_no': id,
       'title': title,
       'description': description,
-      'isDone': isDone ? 1 : 0, // Assuming 0/1 storage for boolean in database
+      'is_done': isDone,
     };
   }
 }

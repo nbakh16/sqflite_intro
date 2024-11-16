@@ -37,10 +37,13 @@ class DBHelper {
       onCreate: (db, version) {
         //all tables
         db.execute(
-          """create table $TABLE_NOTE (
-          $COL_NOTE_SERIAL integer primary key autoincrement,
-          $COL_NOTE_TITLE text,
-          $COL_NOTE_DESC text)    
+          """
+            create table $TABLE_NOTE (
+              $COL_NOTE_SERIAL integer primary key autoincrement,
+              $COL_NOTE_TITLE text,
+              $COL_NOTE_DESC text,
+              $COL_NOTE_ISDONE BOOLEAN DEFAULT 0
+          )    
           """,
         );
       },

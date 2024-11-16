@@ -40,9 +40,9 @@ class _HomeViewState extends State<HomeView> {
               dbRef!.clearDatabase();
               getNotes();
             },
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red,
+            icon: const Text(
+              'Clear DB',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           )
         ],
@@ -76,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
                         onPressed: () async {
                           titleTEC.text = note.title;
                           descTEC.text = note.description;
-                          _updateNoteBottomSheet(context);
+                          _updateNoteBottomSheet(context, note.id);
                         },
                         icon: const Icon(
                           Icons.edit,
@@ -146,7 +146,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  void _updateNoteBottomSheet(BuildContext context) {
+  void _updateNoteBottomSheet(BuildContext context, int id) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -177,9 +177,10 @@ class _HomeViewState extends State<HomeView> {
                 onPressed: () {
                   dbRef!.update(
                     NoteModel(
+                      id: id,
                       title: titleTEC.text.trim(),
                       description: descTEC.text.trim(),
-                      isDone: false,
+                      isDone: 0,
                     ),
                   );
                   getNotes();
